@@ -1,0 +1,183 @@
+# Test Domain Names and Email Addresses
+# UA Readiness Evaluation - UASG004A
+#
+# Data format:
+# #, Reference_Number, Category, Subcategory, Script
+# Domain_Name_or_Email_Address
+#
+# The '#' character starts the comment section in each line
+# Also see the human readable companion document UASG004 for further details
+# Reference_Number in UASG004A aligns with Number in UASG004.
+# Data fields in UASG004A and UASG004 are same but in different order for readability
+# See UASG004 for the status of registrations
+# UASG004 and UASG004A available at https://uasg.tech/
+# 26 July 2021
+# #, Reference_Number, Category, Subcategory, Script
+
+#, 1, ASCII.ASCII, new-long, Long ASCII
+universal-acceptance-test.international
+#, 2, ASCII.ASCII, new-short, Short ASCII
+universal-acceptance-test.icu
+#, 3, IDN.IDN, RTL, Arabic
+تجربة-القبول-الشامل.موريتانيا
+#, 4, IDN.IDN, , Armenian
+համընդհանուր-ընկալում-թեստ.հայ
+#, 5, IDN.IDN, , Bengali Bangla
+সর্বজনীন-স্বীকৃতির-পরীক্ষা.ভারত
+#, 6, IDN.IDN, , Cyrillic
+универсальное-принятие-тест.москва
+#, 7, IDN.IDN, , Devanagari
+सार्वभौमिक-स्वीकृति-परीक्षण.संगठन
+#, 8, IDN.IDN, , Georgian
+უნივერსალური-თავსობადობის-ტესტი.გე
+#, 9, IDN.IDN, , Greek
+καθολική-αποδοχή-δοκιμή.ευ
+#, 10, IDN.IDN, , Gujarati
+સાર્વત્રિક-સ્વીકૃતિ-પરીક્ષણ.ભારત
+#, 11, IDN.IDN, , Gurmukhi
+ਸਰਵਵਿਆਪਕ-ਪ੍ਰਵਾਨਗੀ-ਪਰਖ.ਭਾਰਤ
+#, 12, IDN.IDN, , Hangul
+다국어도메인이용환경테스트.한국
+#, 13, IDN.IDN, RTL, Hebrew
+מבחן-קבלה-אוניברסלי.קום
+#, 14, IDN.IDN, , Hiragana
+どこでもつかえる.みんな
+#, 15, IDN.IDN, , Kannada
+ಸಾರ್ವತ್ರಿಕ-ಸ್ವೀಕಾರಾರ್ಹತೆ-ಪರೀಕ್ಷೆ.ಭಾರತ
+#, 16, IDN.IDN, , Katakana
+ユニバーサルアクセプタンス.クラウド
+#, 17, IDN.IDN, , Lao
+ສາກົນ-ການຍອມຮັບ-ທົດລອງ.ລາວ
+#, 18, IDN.IDN, , Latin
+Universales-Akzeptanz-Test.vermögensberatung
+#, 19, IDN.IDN, , Malayalam
+സാർവത്രിക-സ്വീകാര്യതാ-പരിശോധന.ഭാരതം
+#, 20, IDN.IDN, , Oriya
+ଯୁନିଭରସାଲ-ଏକସେପ୍ଟନ୍ସ-ଟେଷ୍ଟ.ଭାରତ
+#, 21, IDN.IDN, , Sinhala
+විශ්ව-සම්මුති-පිරික්සුම.ලංකා
+#, 22, IDN.IDN, , Tamil
+பொது-ஏற்பு-சோதனை.சிங்கப்பூர்
+#, 23, IDN.IDN, , Telugu
+యూనివర్సల్-ఆమోదం-పరీక్ష.భారత్
+#, 24, IDN.IDN, , Thai
+ยูเอทดสอบ.ไทย
+#, 25, IDN.IDN, , Simplified Chinese
+普遍适用测试.我爱你
+#, 26, IDN.IDN, , Traditional Chinese
+普遍適用測試.台灣
+#, 27, IDN.ASCII, , Ethiopic
+ሁለንአቀፍ-ተቀባይነት-ሙከራ.com
+#, 28, IDN.ASCII, , Khmer
+ការសាកល្បងទទួលយកជាអន្តរជាតិ.com
+#, 29, IDN.ASCII, , Myanmar
+အလုံးစုံလက်ခံမှုစမ်းသပ်ချက်.com
+#, 30, IDN.ASCII, RTL, Thaana
+ދުނިޔެ-ގަބޫލުކުރާ-ޓެސްޓު.com
+#, 31, IDN.ASCII, , Tibetan
+ཡོངས་ཁྱབ་ངོས་ལེན་བརྟག་དཔྱད.com
+#
+#, 32, ASCII@ASCII.ASCII, new-long, Long ASCII
+email-test@universal-acceptance-test.international
+#, 33, ASCII@ASCII.ASCII, new-short, Short ASCII
+email-test@universal-acceptance-test.icu
+#, 34, Unicode@IDN.IDN, RTL, Arabic
+تجربة-بريد-الكتروني@تجربة-القبول-الشامل.موريتانيا
+#, 35, Unicode@IDN.IDN, , Armenian
+Էլփոստ-թեստ@համընդհանուր-ընկալում-թեստ.հայ
+#, 36, Unicode@IDN.IDN, , Bengali Bangla
+ই-মেইল-পরীক্ষা@সর্বজনীন-স্বীকৃতির-পরীক্ষা.ভারত
+#, 37, Unicode@IDN.IDN, , Cyrillic
+почта-тест@универсальное-принятие-тест.москва
+#, 38, Unicode@IDN.IDN, , Devanagari
+ईमेल-परीक्षण@सार्वभौमिक-स्वीकृति-परीक्षण.संगठन
+#, 39, Unicode@IDN.IDN, , Georgian
+ფოსტის-ტესტი@უნივერსალური-თავსობადობის-ტესტი.გე
+#, 40, Unicode@IDN.IDN, , Greek
+ηλεκτρονικό-μήνυμα-δοκιμή@καθολική-αποδοχή-δοκιμή.ευ
+#, 41, Unicode@IDN.IDN, , Gujarati
+ઇમેઇલ-પરીક્ષણ@સાર્વત્રિક-સ્વીકૃતિ-પરીક્ષણ.ભારત
+#, 42, Unicode@IDN.IDN, , Gurmukhi
+ਈਮੇਲ-ਪਰਖ@ਸਰਵਵਿਆਪਕ-ਪ੍ਰਵਾਨਗੀ-ਪਰਖ.ਭਾਰਤ
+#, 43, Unicode@IDN.IDN, , Hangul
+이메일테스트@다국어도메인이용환경테스트.한국
+#, 44, Unicode@IDN.IDN, RTL, Hebrew
+מבחן-דואר-אלקטרוני@מבחן-קבלה-אוניברסלי.קום
+#, 45, Unicode@IDN.IDN, , Hiragana
+めーるてすと@どこでもつかえる.みんな
+#, 46, Unicode@IDN.IDN, , Kannada
+ಇ-ಅಂಚೆ-ಪರೀಕ್ಷೆ@ಸಾರ್ವತ್ರಿಕ-ಸ್ವೀಕಾರಾರ್ಹತೆ-ಪರೀಕ್ಷೆ.ಭಾರತ
+#, 47, Unicode@IDN.IDN, , Katakana
+メールテスト@ユニバーサルアクセプタンス.クラウド
+#, 48, Unicode@IDN.IDN, , Lao
+ອີເມວ-ທົດລອງ@ສາກົນ-ການຍອມຮັບ-ທົດລອງ.ລາວ
+#, 49, Unicode@IDN.IDN, , Latin
+Email-test@Universales-Akzeptanz-Test.vermögensberatung
+#, 50, Unicode@IDN.IDN, , Malayalam
+ഇമെയിൽ-പരിശോധന@സാർവത്രിക-സ്വീകാര്യതാ-പരിശോധന.ഭാരതം
+#, 51, Unicode@IDN.IDN, , Oriya
+ଇମେଇଲ-ଟେଷ୍ଟ@ଯୁନିଭରସାଲ-ଏକସେପ୍ଟନ୍ସ-ଟେଷ୍ଟ.ଭାରତ
+#, 52, Unicode@IDN.IDN, , Sinhala
+ඉ-තැපැල්-පිරික්සුම@විශ්ව-සම්මුති-පිරික්සුම.ලංකා
+#, 53, Unicode@IDN.IDN, , Tamil
+மின்னஞ்சல்-சோதனை@பொது-ஏற்பு-சோதனை.சிங்கப்பூர்
+#, 54, Unicode@IDN.IDN, , Telugu
+ఇమెయిల్-పరీక్ష@యూనివర్సల్-ఆమోదం-పరీక్ష.భారత్
+#, 55, Unicode@IDN.IDN, , Thai
+อีเมลทดสอบ@ยูเอทดสอบ.ไทย
+#, 56, Unicode@IDN.IDN, , Simplified Chinese
+电子邮件测试@普遍适用测试.我爱你
+#, 57, Unicode@IDN.IDN, , Traditional Chinese
+電子郵件測試@普遍適用測試.台灣
+#, 58, Unicode@IDN.ASCII, , Ethiopic
+ኢሜይል-ሙከራ@ሁለንአቀፍ-ተቀባይነት-ሙከራ.com
+#, 59, Unicode@IDN.ASCII, , Khmer
+សារអេឡិកត្រូនិកសាកល្បង@ការសាកល្បងទទួលយកជាអន្តរជាតិ.com
+#, 60, Unicode@IDN.ASCII, , Myanmar
+အီးမေးလ်စမ်းသပ်ချက်@အလုံးစုံလက်ခံမှုစမ်းသပ်ချက်.com
+#, 61, Unicode@IDN.ASCII, RTL, Thaana
+އީމޭލު-ޓެސްޓު@ދުނިޔެ-ގަބޫލުކުރާ-ޓެސްޓު.com
+#, 62, Unicode@IDN.ASCII, , Tibetan
+གློག་འཕྲིན་བརྟག་དཔྱད@ཡོངས་ཁྱབ་ངོས་ལེན་བརྟག་དཔྱད.com
+#
+#, 63, ASCII.IDN, RTL, Hebrew
+universal-acceptance-test.קום
+#, 64, IDN.ASCII, , Latin
+épreuve-acceptation-universelle.org
+#, 65, IDN.ASCII, not in NFC normalization form, Latin
+épreuve-acceptation-universelle.org
+#, 66, IDN.IDN, Ideographic Full Stop, Simplified Chinese
+普遍适用测试。我爱你
+#, 67, IDN.IDN, RTL; A-label.U-label, Arabic
+موريتانيا.xn-----ctdbabcfhu9c2b9l1acccr4c
+#, 68, IDN.IDN, RTL; U-label.A-label, Arabic
+تجربة-القبول-الشامل.xn--mgbah1a3hjkrd
+#, 69, IDN.IDN, RTL; A-label.A-label, Arabic
+xn-----ctdbabcfhu9c2b9l1acccr4c.xn--mgbah1a3hjkrd
+#, 70, ASCII.ASCII/Unicode, , Simplified Chinese
+universal-acceptance-test.icu/测试
+#, 71, IDN.IDN/Unicode, , Simplified Chinese
+普遍适用测试.我爱你/测试
+#, 72, IDN.IDN/Unicode, RTL, Arabic
+تجربة-القبول-الشامل.موريتانيا/تجربة
+#
+#, 73, ASCII@ASCII.IDN, RTL, Hebrew
+email-test@universal-acceptance-test.קום
+#, 74, IDN@IDN.ASCII, , Latin
+email-épreuve@épreuve-acceptation-universelle.org
+#, 75, IDN@IDN.ASCII, mailbox using uppercase letters, Latin
+Email-Épreuve@épreuve-acceptation-universelle.org
+#, 76, IDN@IDN.ASCII, domain in non-NFC normalization form, Latin
+email-épreuve@épreuve-acceptation-universelle.org
+#, 77, IDN@IDN.ASCII, mailbox in non-NFC normalization form, Latin
+email-épreuve@épreuve-acceptation-universelle.org
+#, 78, IDN@IDN.IDN, Ideographic Full Stop, Simplified Chinese
+电子邮件测试@普遍适用测试。我爱你
+#, 79, Unicode@IDN.IDN, RTL; A-label.U-label, Arabic
+تجربة-بريد-الكتروني@xn-----ctdbabcfhu9c2b9l1acccr4c.موريتانيا
+#, 80, Unicode@IDN.IDN, RTL; U-label.A-label, Arabic
+تجربة-بريد-الكتروني@تجربة-القبول-الشامل.xn--mgbah1a3hjkrd
+#, 81, Unicode@IDN.IDN, RTL; A-label.A-label, Arabic
+تجربة-بريد-الكتروني@xn-----ctdbabcfhu9c2b9l1acccr4c.xn--mgbah1a3hjkrd
+#, 82, ASCII@IDN.IDN, RTL; A-label.A-label, Arabic
+email-test@xn-----ctdbabcfhu9c2b9l1acccr4c.xn--mgbah1a3hjkrd
