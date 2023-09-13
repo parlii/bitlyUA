@@ -23,28 +23,33 @@ const (
 	bitlyToken     = "9d2b7f4ae41b97b16443090d7997cb6e84a667f8" // Update with your Bitly token
 )
 
-type URLFormatType int
+// URLType is a custom type to describe the type of the URL.
+type URLType string
 
 const (
-	Unknown URLFormatType = iota
-	Original
-	IDNA
-	Encoded
+	Encoded  URLType = "Encoded"
+	Punycode URLType = "Punycode"
+	IDN      URLType = "IDN"
+	ASCII    URLType = "ASCII"
 )
 
 type URLUATestResult struct {
-	OriginalURL                  string
-	FormattedURL                 string
-	BitlyURL                     string
+	OriginalURL     string
+	OriginalURLType URLType
+
+	FormattedURL string
+	BitlyURL     string
+
+	StoredURL     string
+	StoredURLType URLType
+
 	RedirectedDestinationURL     string
-	RedirectedDestinationURLType URLFormatType
-	StoredURL                    string
-	StoredURLType                URLFormatType
-	DestinationURLTitle          string
-	Error                        error
+	RedirectedDestinationURLType URLType
+
+	Error error
 }
 
-func TestBitlySupportForScripts(t *testing.T) {
+func TestBitlySupportForUA(t *testing.T) {
 	rawURLs, err := loadURLsFromFile("urls.txt")
 	require.NoError(t, err)
 
@@ -55,7 +60,6 @@ func TestBitlySupportForScripts(t *testing.T) {
 		results = append(results, result)
 	}
 
-	// dump json of results to a file
 	data, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
 		log.Fatal(err)
@@ -92,42 +96,18 @@ func loadURLsFromFile(filename string) ([]string, error) {
 	return URLs, nil
 }
 
-func determineURLType(redirectedURL, originalURL string) (URLFormatType, error) {
-	redirectedURL = strings.TrimPrefix(redirectedURL, "http://")
-	redirectedURL = strings.TrimSuffix(redirectedURL, "/")
-
-	originalURL = strings.TrimPrefix(originalURL, "http://")
-	originalURL = strings.TrimSuffix(originalURL, "/")
-
-	if redirectedURL == originalURL {
-		return Original, nil
-	}
-
-	idn, _ := idna.ToUnicode(redirectedURL)
-	if idn == originalURL {
-		return IDNA, nil
-	}
-
-	decodedRedirectedURL, err := decodeURL(redirectedURL)
-	if err != nil {
-		return 0, err
-	}
-	if decodedRedirectedURL == originalURL {
-		return Encoded, nil
-	}
-
-	originalURL = strings.ToLower(originalURL)
-	if redirectedURL == originalURL {
-		return Original, nil
-	}
-
-	return Unknown, nil
-}
-
 func processURL(rawURL string) URLUATestResult {
 	result := URLUATestResult{
 		OriginalURL:  rawURL,
 		FormattedURL: fmt.Sprintf("http://%s/", rawURL),
+	}
+
+	var err error
+
+	result.OriginalURLType, err = getURLType(result.OriginalURL)
+	if err != nil {
+		result.Error = err
+		return result
 	}
 
 	shortenResp, err := shortenURL(result.FormattedURL)
@@ -143,7 +123,7 @@ func processURL(rawURL string) URLUATestResult {
 	}
 
 	result.StoredURL = bitlinkResp.Get("long_url").MustString()
-	result.StoredURLType, err = determineURLType(result.StoredURL, result.OriginalURL)
+	result.StoredURLType, err = getURLType(result.StoredURL)
 	if err != nil {
 		result.Error = err
 		return result
@@ -159,7 +139,7 @@ func processURL(rawURL string) URLUATestResult {
 
 	result.RedirectedDestinationURL = redirectedURL
 
-	urlType, err := determineURLType(redirectedURL, result.OriginalURL)
+	urlType, err := getURLType(redirectedURL)
 	if err != nil {
 		result.Error = err
 		return result
@@ -169,18 +149,43 @@ func processURL(rawURL string) URLUATestResult {
 	return result
 }
 
-func decodeURL(encodedURL string) (string, error) {
-	parsedURL, err := url.Parse(encodedURL)
+// getURLType determines the type of the given URL.
+func getURLType(rawURL string) (URLType, error) {
+	if !strings.HasPrefix(rawURL, "http") {
+		rawURL = "http://" + rawURL
+	}
+
+	if !strings.HasSuffix(rawURL, "/") {
+		rawURL = rawURL + "/"
+	}
+
+	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
 		return "", err
 	}
 
-	decodedPath, err := url.PathUnescape(parsedURL.Path)
+	// Convert domain to punycode and check if it matches the original.
+	// If it doesn't match, then it was an IDN domain.
+	puny, err := idna.ToASCII(parsedURL.Host)
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s%s", parsedURL.Host, decodedPath), nil
+	if puny != parsedURL.Host {
+		return IDN, nil
+	}
+
+	// Check for punycode (xn--).
+	if strings.Contains(parsedURL.Host, "xn--") {
+		return Punycode, nil
+	}
+
+	// Check for percentage-encoded characters in the URL.
+	if strings.Contains(rawURL, "%") {
+		return Encoded, nil
+	}
+
+	return ASCII, nil
 }
 
 func fetchRedirectDestination(bitlyURL string) (string, error) {
