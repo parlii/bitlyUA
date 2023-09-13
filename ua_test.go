@@ -2,93 +2,188 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"os"
+	"net/url"
 	"strings"
 	"testing"
 
 	"github.com/bitly/go-simplejson"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/net/idna"
 )
 
 const (
 	bitlyAPIBase   = "https://api-ssl.bitly.com/v4"
 	bitlyShortenEP = "/shorten"
-	bitlyToken     = "9d2b7f4ae41b97b16443090d7997cb6e84a667f8"
+	bitlyToken     = "9d2b7f4ae41b97b16443090d7997cb6e84a667f8" // Update with your Bitly token
 )
 
+type URLFormatType int
+
+const (
+	Unknown URLFormatType = iota
+	Original
+	IDNA
+	Encoded
+)
+
+type URLUATestResult struct {
+	OriginalURL                  string
+	FormattedURL                 string
+	BitlyURL                     string
+	RedirectedDestinationURL     string
+	RedirectedDestinationURLType URLFormatType
+	StoredURL                    string
+	StoredURLType                URLFormatType
+	DestinationURLTitle          string
+	Error                        error
+}
+
 func TestBitlySupportForScripts(t *testing.T) {
-	data, err := ioutil.ReadFile("urls.txt")
+	rawURLs, err := loadURLsFromFile("urls.txt")
 	require.NoError(t, err)
 
-	lines := strings.Split(string(data), "\n")
+	var results []URLUATestResult
 
-	o, err := os.Create("urls_output.txt")
-	require.NoError(t, err)
-	defer o.Close()
+	for _, rawURL := range rawURLs {
+		result := processURL(rawURL)
+		results = append(results, result)
+	}
 
-	for _, url := range lines {
-		o.WriteString(url)
+	// dump json of results to a file
+	data, err := json.MarshalIndent(results, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		// skip non urls
-		if strings.HasPrefix(url, "#") || url == "" {
-			o.WriteString("\n")
-			continue
-		}
-
-		// mark emails
-		if strings.Contains(url, "@") {
-			o.WriteString(" 📫\n")
-			continue
-		}
-
-		formattedURL := fmt.Sprintf("http://%s/", url)
-
-		shortenURLResp, err := shortenURL(formattedURL)
-		if err != nil {
-			o.WriteString(" ERROR: " + err.Error() + " ❌\n")
-			continue
-		}
-
-		longURL1 := shortenURLResp.Get("long_url").MustString()
-
-		getBitlinkResp, err := getBitlink(shortenURLResp.Get("link").MustString())
-		if err != nil {
-			o.WriteString(" ERROR: " + err.Error() + " ❌\n")
-			continue
-		}
-
-		longURL2 := getBitlinkResp.Get("long_url").MustString()
-		if longURL1 == formattedURL && longURL2 == formattedURL {
-			o.WriteString(" ✅")
-		} else {
-			o.WriteString(" ❌" + longURL1 + " " + longURL2)
-		}
-
-		// get the redirect destination
-		destination, err := FetchRedirectDestination(shortenURLResp.Get("link").MustString())
-		if err != nil {
-			o.WriteString(" ERROR: " + err.Error() + " ❌\n")
-			continue
-		}
-
-		if destination == formattedURL {
-			o.WriteString(" ✅")
-		} else {
-			o.WriteString(" ❌ " + destination)
-		}
-
-		o.WriteString("\n")
+	err = ioutil.WriteFile("results.json", data, 0644)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
-// FetchRedirectDestination takes a shortened Bitly URL, follows its redirect,
-// and returns the destination URL.
-func FetchRedirectDestination(bitlyURL string) (string, error) {
-	// Create an HTTP client with redirect policy not to follow redirects.
+func loadURLsFromFile(filename string) ([]string, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var URLs []string
+
+	lines := strings.Split(string(data), "\n")
+	for _, line := range lines {
+		if line == "" {
+			continue
+		}
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+		if strings.Contains(line, "@") {
+			continue
+		}
+		URLs = append(URLs, line)
+	}
+
+	return URLs, nil
+}
+
+func determineURLType(redirectedURL, originalURL string) (URLFormatType, error) {
+	redirectedURL = strings.TrimPrefix(redirectedURL, "http://")
+	redirectedURL = strings.TrimSuffix(redirectedURL, "/")
+
+	originalURL = strings.TrimPrefix(originalURL, "http://")
+	originalURL = strings.TrimSuffix(originalURL, "/")
+
+	if redirectedURL == originalURL {
+		return Original, nil
+	}
+
+	idn, _ := idna.ToUnicode(redirectedURL)
+	if idn == originalURL {
+		return IDNA, nil
+	}
+
+	decodedRedirectedURL, err := decodeURL(redirectedURL)
+	if err != nil {
+		return 0, err
+	}
+	if decodedRedirectedURL == originalURL {
+		return Encoded, nil
+	}
+
+	originalURL = strings.ToLower(originalURL)
+	if redirectedURL == originalURL {
+		return Original, nil
+	}
+
+	return Unknown, nil
+}
+
+func processURL(rawURL string) URLUATestResult {
+	result := URLUATestResult{
+		OriginalURL:  rawURL,
+		FormattedURL: fmt.Sprintf("http://%s/", rawURL),
+	}
+
+	shortenResp, err := shortenURL(result.FormattedURL)
+	if err != nil {
+		result.Error = err
+		return result
+	}
+
+	bitlinkResp, err := getBitlink(shortenResp.Get("link").MustString())
+	if err != nil {
+		result.Error = err
+		return result
+	}
+
+	result.StoredURL = bitlinkResp.Get("long_url").MustString()
+	result.StoredURLType, err = determineURLType(result.StoredURL, result.OriginalURL)
+	if err != nil {
+		result.Error = err
+		return result
+	}
+
+	result.BitlyURL = shortenResp.Get("link").MustString()
+
+	redirectedURL, err := fetchRedirectDestination(result.BitlyURL)
+	if err != nil {
+		result.Error = err
+		return result
+	}
+
+	result.RedirectedDestinationURL = redirectedURL
+
+	urlType, err := determineURLType(redirectedURL, result.OriginalURL)
+	if err != nil {
+		result.Error = err
+		return result
+	}
+	result.RedirectedDestinationURLType = urlType
+
+	return result
+}
+
+func decodeURL(encodedURL string) (string, error) {
+	parsedURL, err := url.Parse(encodedURL)
+	if err != nil {
+		return "", err
+	}
+
+	decodedPath, err := url.PathUnescape(parsedURL.Path)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s%s", parsedURL.Host, decodedPath), nil
+}
+
+func fetchRedirectDestination(bitlyURL string) (string, error) {
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -101,23 +196,16 @@ func FetchRedirectDestination(bitlyURL string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	// Check for the "Location" header in the response
-	location := resp.Header.Get("Location")
-	if location == "" {
-		return "", fmt.Errorf("no redirect location found")
-	}
-	return location, nil
+	return resp.Header.Get("Location"), nil
 }
 
-func sendRequest(method, url string, body io.Reader, headers map[string]string) (*simplejson.Json, error) {
-	req, err := http.NewRequest(method, url, body)
+func sendRequest(method, endpoint string, body io.Reader) (*simplejson.Json, error) {
+	req, err := http.NewRequest(method, bitlyAPIBase+endpoint, body)
 	if err != nil {
 		return nil, err
 	}
 
-	for key, value := range headers {
-		req.Header.Set(key, value)
-	}
+	req.Header.Set("Authorization", "Bearer "+bitlyToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -126,18 +214,14 @@ func sendRequest(method, url string, body io.Reader, headers map[string]string) 
 	}
 	defer resp.Body.Close()
 
-	respBody, err := ioutil.ReadAll(resp.Body)
+	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	return simplejson.NewJson(respBody)
+	return simplejson.NewJson(b)
 }
 
 func shortenURL(longURL string) (*simplejson.Json, error) {
-	if longURL == "" {
-		return nil, nil
-	}
-
 	js := simplejson.New()
 	js.Set("long_url", longURL)
 
@@ -146,18 +230,11 @@ func shortenURL(longURL string) (*simplejson.Json, error) {
 		return nil, err
 	}
 
-	headers := map[string]string{
-		"Authorization": "Bearer " + bitlyToken,
-		"Content-Type":  "application/json",
-	}
-	return sendRequest("POST", bitlyAPIBase+bitlyShortenEP, bytes.NewReader(data), headers)
+	return sendRequest("POST", bitlyShortenEP, bytes.NewReader(data))
 }
 
 func getBitlink(shortURL string) (*simplejson.Json, error) {
-	shortURL = strings.TrimPrefix(shortURL, "https://")
+	bitlink_id := strings.TrimPrefix(shortURL, "https://")
 
-	headers := map[string]string{
-		"Authorization": "Bearer " + bitlyToken,
-	}
-	return sendRequest("GET", bitlyAPIBase+"/bitlinks/"+shortURL, nil, headers)
+	return sendRequest("GET", "/bitlinks/"+bitlink_id, nil)
 }
