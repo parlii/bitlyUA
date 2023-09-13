@@ -18,4 +18,6 @@ When Bitly short links are redirected, the IDNA format of the original URL is re
 
 ## How to run the test script
 
+```
 go test .
+```
