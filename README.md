@@ -12,9 +12,9 @@ This repository contains a test script to check if Bitly's APIs supports “Univ
 | Process  | Short URL (Bitlink) redirects to the equivalent punycode URL            | ✅ 🔹     |
 | Display  | URL is returned in its original IDN format while retrieving the Bitlink | ✅        |
 
-Bitly's API supports Universal Acceptance of newer, longer and internationalized top-level domains addresses.
-
 🔹 Bitly short links redirect to the punycode format of the IDN URL which is used for DNS resolution. Browsers are expected to convert and display the punycode URL in the original IDN format.
+
+Bitly's API supports Universal Acceptance of newer, longer and internationalized top-level domains addresses.
 
 ## How to run the test script
 
