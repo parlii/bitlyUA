@@ -9,12 +9,12 @@ This respositary contains a test script to check if Bitly's APIs supports “Uni
 | Accept   | URL is shortened                                                        | ✅        |
 | Validate | URL is shortened                                                        | ✅        |
 | Store    | URL is returned in its original IDN format while retrieving the Bitlink | ✅        |
-| Process  | Short URL (Bitlink) redirects to the original IDN URL                   | ✅        |
+| Process  | Short URL (Bitlink) redirects to the original IDN URL                   | ❓        |
 | Display  | URL is returned in its original IDN format while retrieving the Bitlink | ✅        |
 
 Bitly's API supports Universal Acceptance of newer, longer and internationalized top-level domains addresses.
 
-When Bitly short links are redirected, the IDNA format of the original URL is returned which is then translated by the browser to the correct IDN URL.
+❓ When Bitly short links are redirected, the IDNA format of the original URL is returned which is then translated by the browser to the correct IDN URL.
 
 ## How to run the test script
 
